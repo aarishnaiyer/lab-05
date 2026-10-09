@@ -25,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import com.example.listycity.ui.theme.ListyCityTheme
 
 @Composable
@@ -32,6 +34,7 @@ fun CityListScreen(
     cities: List<City>,
     onAddCity: (City) -> Unit,
     onUpdateCity: (City, City) -> Unit,
+    onDeleteCity: (City) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var newCityName by remember { mutableStateOf("") }
@@ -166,7 +169,9 @@ fun CityListScreen(
                         selectedCity = city
                         editedCityName = city.name
                         editedProvinceName = city.province
-                    }
+                    },
+                    onLongClick = { onDeleteCity = city }
+
                 )
                 if (index < cities.lastIndex) {
                     HorizontalDivider()
@@ -176,16 +181,20 @@ fun CityListScreen(
     }
 }
 
-
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CityRow(
     city: City,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Text(
@@ -213,7 +222,8 @@ fun CityListScreenPreview() {
                 City("Calgary", "AB")
             ),
             onAddCity = {},
-            onUpdateCity = { _, _ -> }
+            onUpdateCity = { _, _ -> },
+            onDeleteCity = {}
         )
     }
 }
